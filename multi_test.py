@@ -44,7 +44,7 @@ def test(device):
         actual = f"{gt[i]:.1f}".ljust(20)
         predicted = f"{hat[i]:.1f}".ljust(20)
         actual_gender = f"{cid.gender_string(results[i][2])}".ljust(20)
-        predicted_gender = f"{cid.gender_string(results[i][4])}".ljust(20)
+        predicted_gender = f"{cid.gender_string(results[i][3])}".ljust(20)
         print(f"{actual}{predicted}{actual_gender}{predicted_gender}")
 
     print(f'Gender prediction: Total:{total}, Correct:{correct}, Accuracy:{correct / total * 100:.2f}')
