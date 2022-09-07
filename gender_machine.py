@@ -4,7 +4,7 @@ import torchvision
 from torchvision.models import resnet50, ResNet50_Weights
 
 
-class AgeMachine(nn.Module):
+class GenderMachine(nn.Module):
     def __init__(self):
         super().__init__()
         self.resnet = resnet50(weights=ResNet50_Weights.DEFAULT)
@@ -21,5 +21,4 @@ class AgeMachine(nn.Module):
 
     def forward(self, x):
         x = self.resnet(x)
-        x = self.fc(x)
         return F.log_softmax(x, dim=1)

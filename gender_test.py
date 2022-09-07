@@ -1,6 +1,7 @@
 import torch
 from face_dataset import FaceDataset
 from torch.utils.data import DataLoader
+import torch.nn.functional as F
 
 
 def test(device):
@@ -8,7 +9,7 @@ def test(device):
     cid = FaceDataset(is_train=False)
     dataloader = DataLoader(cid, batch_size=batch_size, shuffle=True)
     criterion = torch.nn.MSELoss(reduction='mean')
-    model = torch.load("models/age.h5")
+    model = torch.load("models/gender.h5")
     model.eval()
     model.to(device)
     correct = 0
@@ -20,26 +21,16 @@ def test(device):
 
     for (image, age, gender) in dataloader:
         image = image.to(device)
-        age = age.to(device)
+        gender = gender.to(device)
         y_hat = model(image)
-        y_hat = y_hat.reshape(-1)
-        loss = criterion(y_hat, age)
+        loss = F.cross_entropy(y_hat, gender)
         itr = itr+1
         loss_cum = loss_cum + loss.item()
+        pred = torch.argmax(y_hat, dim=1, keepdim=True)
+        correct += pred.eq(gender.data.view_as(pred)).sum()
+        total += gender.shape[0]
 
-        for i in range(y_hat.shape[0]):
-            results.append((age[i].item(), y_hat[i].item()))
-
-    gt2 = [i[0] for i in results]
-    hat2 = [i[1] for i in results]
-    gt = cid.unscale(gt2)
-    hat= cid.unscale(hat2)
-    print(f"Actual Age\t\t\tPredicted Age")
-    for i in range(len(gt)):
-        actual = f"{gt[i]:.1f}".ljust(20)
-        predicted = f"{hat[i]:.1f}".ljust(20)
-        print(f"{actual}{predicted}")
-
+    print(f'Total:{total}, Correct:{correct}, Accuracy:{correct / total * 100:.2f}')
     loss_cum = loss_cum / itr
     print(f"Loss {loss_cum:.6f}")
 

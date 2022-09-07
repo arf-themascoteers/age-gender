@@ -67,14 +67,13 @@ class FaceDataset(Dataset):
 
     def __getitem__(self, idx):
         image_name = self.image_list[idx]
-        age = self.age_list[idx]
         age_torch = self.age_torch_list[idx]
         gender = self.gender_list[idx]
+        gender_torch = torch.tensor(gender)
         img_path = os.path.join(self.img_dir, image_name)
         image = PIL.Image.open(img_path)
         image = self.transforms(image)
-        return image, age_torch, gender
-
+        return image, age_torch, gender_torch
 
 if __name__ == "__main__":
     cid = FaceDataset()
