@@ -7,7 +7,7 @@ def test(device):
     batch_size = 100
     cid = FaceDataset(is_train=False)
     dataloader = DataLoader(cid, batch_size=batch_size, shuffle=True)
-    model = torch.load("models/age.h5")
+    model = torch.load("models/multi.h5")
     model.eval()
     model.to(device)
     correct = 0
@@ -19,16 +19,21 @@ def test(device):
 
     for (image, age, gender) in dataloader:
         image = image.to(device)
+        age = age.to(device)
         gender = gender.to(device)
         y_hat = model(image)
         age_hat = y_hat[:, 0]
         gender_hat = y_hat[:, 1:]
         age_hat = age_hat.reshape(-1)
+        pred = torch.argmax(y_hat, dim=1, keepdim=True)
+        correct += pred.eq(gender.data.view_as(pred)).sum()
+        total += gender.shape[0]
         itr = itr+1
 
         for i in range(y_hat.shape[0]):
+            pred_gender = torch.argmax(gender_hat[i], dim=0)
             results.append((age[i].item(), age_hat[i].item(),
-                            gender[i].item(), gender_hat.item()))
+                            gender[i].item(), pred_gender.item()))
 
     gt2 = [i[0] for i in results]
     hat2 = [i[1] for i in results]
@@ -40,9 +45,10 @@ def test(device):
         predicted = f"{hat[i]:.1f}".ljust(20)
         print(f"{actual}{predicted}{int(results[i][2])}{int(results[i][3])}")
 
-
+    print(f'Total:{total}, Correct:{correct}, Accuracy:{correct / total * 100:.2f}')
     loss_cum = loss_cum / itr
     print(f"Loss {loss_cum:.6f}")
+
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
