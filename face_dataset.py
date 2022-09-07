@@ -75,6 +75,13 @@ class FaceDataset(Dataset):
         image = self.transforms(image)
         return image, age_torch, gender_torch
 
+    def gender_string(self, int_value):
+        if int(int_value) == 0:
+            return "Female"
+        if int(int_value) == 1:
+            return "Male"
+        return None
+
 if __name__ == "__main__":
     cid = FaceDataset()
     dataloader = DataLoader(cid, batch_size=1, shuffle=True)

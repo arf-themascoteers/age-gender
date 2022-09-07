@@ -43,11 +43,12 @@ def test(device):
     for i in range(len(gt)):
         actual = f"{gt[i]:.1f}".ljust(20)
         predicted = f"{hat[i]:.1f}".ljust(20)
-        print(f"{actual}{predicted}{int(results[i][2])}{int(results[i][3])}")
+        actual_gender = f"{cid.gender_string(results[i][2])}".ljust(20)
+        predicted_gender = f"{cid.gender_string(results[i][4])}".ljust(20)
+        print(f"{actual}{predicted}{actual_gender}{predicted_gender}")
 
-    print(f'Total:{total}, Correct:{correct}, Accuracy:{correct / total * 100:.2f}')
-    loss_cum = loss_cum / itr
-    print(f"Loss {loss_cum:.6f}")
+    print(f'Gender prediction: Total:{total}, Correct:{correct}, Accuracy:{correct / total * 100:.2f}')
+
 
 
 if __name__ == "__main__":
