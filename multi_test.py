@@ -25,7 +25,7 @@ def test(device):
         age_hat = y_hat[:, 0]
         gender_hat = y_hat[:, 1:]
         age_hat = age_hat.reshape(-1)
-        pred = torch.argmax(y_hat, dim=1, keepdim=True)
+        pred = torch.argmax(gender_hat, dim=1, keepdim=True)
         correct += pred.eq(gender.data.view_as(pred)).sum()
         total += gender.shape[0]
         itr = itr+1
